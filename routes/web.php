@@ -35,7 +35,8 @@ Route::middleware('auth')->group(function () {
         Route::get('dashboard',[DashboardController::class,'index'])->name('dashboard');
         Route::get('meeting/{id}',[DashboardController::class,'meeting'])->name('meeting');
         Route::post('handshake',[DashboardController::class,'handshake'])->name('handshake');
-
+        Route::get('scheduled-meetings', [DashboardController::class, 'scheduledMeetings'])->name('scheduled.meetings');
+        Route::get('check-meeting/{code}', [DashboardController::class, 'findMeetingByCode']);
     });
 });
 

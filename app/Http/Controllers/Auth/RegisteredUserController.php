@@ -37,12 +37,23 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'string','email', 'max:255', 'unique:users', new LiuEmailFormat()],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            
+        
         ]);
-
+        $email = $request->email;
+        if (preg_match('/^[0-9]+@students.liu.edu.lb$/', $email )) {
+            $role = 'student';
+        }
+        else {
+            $role = 'instructor';
+        }
+                  
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $role,
+        
         ]);
 
         event(new Registered($user));
