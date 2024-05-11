@@ -8,8 +8,11 @@ import { useState } from 'react';
 import useRandomStringGenerator from '@/hooks/useRandomStringGenerator';
 import MeetingsList from '@/Components/MeetingsList';
 import axios from 'axios';
+import DeleteUserForm from "@/Pages/Profile/Partials/DeleteUserForm";
+import ScheduleMeetingForm from "@/Pages/ScheduleMeetingForm";
+import { User } from '@/types';
 
-export default function Dashboard({ auth, meetings }: PageProps) {
+export default function Dashboard({ auth, meetings, allUsers }: PageProps) {
 
 
     const [meetingId, setMeetingId] = useState('');
@@ -40,6 +43,7 @@ export default function Dashboard({ auth, meetings }: PageProps) {
 
     }
 
+    // @ts-ignore
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -58,10 +62,9 @@ export default function Dashboard({ auth, meetings }: PageProps) {
                             <p>We re-engineered the service we built for secure business meetings, Google Meet, to make it free and available for all.</p>
                             <div className="grid grid-cols-6 gap-2 mt-10 lg:grid-cols-12">
                                 { auth.user.role === 'instructor' &&
-                                    <PrimaryButton onClick={newMeetingHandle} className="col-span-4 text-center">
-                                        New Meeting
-                                    </PrimaryButton>
-                       
+
+                                    <ScheduleMeetingForm users={allUsers} className="col-span-4 text-center" />
+
                                 }
                                 <TextInput onChange={(e) => {
                                     setMeetingId(e.target.value)
@@ -70,7 +73,7 @@ export default function Dashboard({ auth, meetings }: PageProps) {
                             </div>
                         </div>
 
-                        
+
                         <div>
                         <MeetingsList meetings={meetings} />
                         </div>
