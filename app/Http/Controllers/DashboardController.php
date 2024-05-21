@@ -71,4 +71,26 @@ class DashboardController extends Controller
         return response()->json($meeting_exists);
     }
 
+    public function createMeeting(Request $request)
+    {
+        
+        $validatedData = $request->validate([
+            'name' => 'required|string',
+            'date' => 'required|date',
+            'invitees' => 'required|array', 
+        ]);
+
+        
+        $meeting = new Meeting();
+        $meeting->name = $validatedData['name'];
+        $meeting->date = $validatedData['date'];
+       
+        $meeting->save();
+
+        
+        $meeting->invitees()->attach($validatedData['invitees']);
+
+     
+        return response()->json(['message' => 'Meeting created successfully'], 201);
+    }
 }
