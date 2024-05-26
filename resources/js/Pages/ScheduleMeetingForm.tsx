@@ -9,18 +9,19 @@ import Select from "react-tailwindcss-select";
 import {User} from "@/types";
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
-        
+
 
 
 export default function ScheduleMeetingForm({ users = [], className = '' }: { users?: any| User[] , className?: string }) {
     const [confirmingMeetingCreate, setConfirmMeetingCreation] = useState(false);
     const [invitees, setInvitees] = useState(null);
     const meetingNameInput = useRef<HTMLInputElement>();
-    const dateInput = useRef<HTMLInputElement>();
+    const startDateInput = useRef<HTMLInputElement>();
+    const endDateInput = useRef<HTMLInputElement>();
     const options = users.map((user: User) => ({ name: user.name +' ('+ user.email+')', code: user.id }));
-    
-    
-    
+
+
+
     const {
         data,
         setData,
@@ -30,7 +31,8 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         errors,
     } = useForm({
         name: '',
-        date: '',
+        start_date: '',
+        end_date: '',
         invitees: [],
     });
 
@@ -38,10 +40,12 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         setConfirmMeetingCreation(true);
     };
 
+
+
     const handleInvitees = (e: any) => {
         console.log(e)
         setInvitees(e)
-        setData('invitees', e.map((user: any) => user.value));
+        setData('invitees', e.map((user: any) => user.code));
     }
 
     const createMeeting: FormEventHandler = (e) => {
@@ -50,7 +54,20 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         create(route('meeting.create'), {
             preserveScroll: true,
             onSuccess: () => closeModal(),
-            onError: () => dateInput.current?.focus(),
+            onError: () => {
+                if (meetingNameInput.current) {
+                    meetingNameInput.current.focus();
+                }
+                if (startDateInput.current) {
+                    startDateInput.current.focus();
+                }
+                if (endDateInput.current) {
+                    endDateInput.current.focus();
+                }
+                if (invitees) {
+                    setInvitees(invitees);
+                }
+            },
             onFinish: () => reset(),
         });
     };
@@ -76,7 +93,7 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         </h2>
 
         <div className="mt-6">
-            <InputLabel htmlFor="name" value="Meeting Name" className="sr-only" />
+            <InputLabel htmlFor="name" value="Meeting Name"  />
             <TextInput
                 id="name"
                 type="text"
@@ -92,26 +109,46 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         </div>
 
         <div className="mt-6">
-            <InputLabel htmlFor="date" value="Date" className="sr-only" />
+            <InputLabel htmlFor="start_date" value="Start Date" />
             <TextInput
-                id="date"
+                id="start_date"
                 type="datetime-local"
-                name="date"
-                ref={dateInput}
-                value={data.date}
-                onChange={(e) => setData('date', e.target.value)}
+                name="start_date"
+                ref={startDateInput}
+                value={data.start_date}
+                onChange={(e) => setData('start_date', e.target.value)}
                 className="mt-1 block w-full"
                 isFocused
                 placeholder="Date"
             />
-            <InputError message={errors.date} className="mt-2" />
+            <InputError message={errors.start_date} className="mt-2" />
         </div>
 
         <div className="mt-6">
+            <InputLabel htmlFor="end_date" value="End Date" />
+            <TextInput
+                id="end_date"
+                type="datetime-local"
+                name="end_date"
+                ref={endDateInput}
+                value={data.end_date}
+                onChange={(e) => setData('end_date', e.target.value)}
+                className="mt-1 block w-full"
+                isFocused
+                placeholder="Date"
+            />
+            <InputError message={errors.end_date} className="mt-2" />
+        </div>
+
+
+        <div className="mt-6">
+            <InputLabel htmlFor="invitees" value="Invitees" />
             <div className="card flex justify-content-center">
                 <MultiSelect
+                    id={"invitees"}
+                    name="invitees"
                     value={invitees}
-                    onChange={(e) => setInvitees(e.value)}
+                    onChange={(e) => handleInvitees(e.value)}
                     optionLabel="name"
                     options={options}
                     placeholder="Select users"
@@ -119,8 +156,9 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
                     filter
                 />
             </div>
+            <InputError message={errors.invitees} className="mt-2" />
         </div>
-        
+
         <div className="mt-6 flex justify-end">
             <button onClick={confirmMeetingCreation} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                  Create Meeting

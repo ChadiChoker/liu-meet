@@ -43,4 +43,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function meetings()
+    {
+        return $this->hasMany(Meeting::class);
+    }
+
+    // A user can have many meeting invitations (many-to-many relationship)
+    public function invitations()
+    {
+        return $this->belongsToMany(Meeting::class, 'invitations');
+    }
 }

@@ -39,9 +39,8 @@ export default function Dashboard({ auth, meetings, allUsers }: PageProps) {
             }
             router.visit(`/meeting/${meetingId}`);
           });
-
-
     }
+
 
     // @ts-ignore
     return (
