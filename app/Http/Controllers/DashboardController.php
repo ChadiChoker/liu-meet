@@ -31,7 +31,10 @@ class DashboardController extends Controller
        $user = auth()->user();
 
        $meetings = Meeting::leftJoin('invitations', 'meetings.id', '=', 'invitations.meeting_id')
-           // ->where('invitations.user_id', $user->id)
+           ->where(function ($query) use ($user) {
+               $query->where('meetings.user_id', $user->id)
+                   ->orWhere('invitations.user_id', $user->id);
+              })
             ->get();
 
        $allUsers = User::all()->except(auth()->id())->toArray();
