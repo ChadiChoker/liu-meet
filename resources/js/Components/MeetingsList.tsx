@@ -20,7 +20,7 @@ const MeetingsList = ( {meetings}: any) => {
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">{meeting.name}</p>
                                 <p className="text-sm text-gray-500 truncate">
-                                    { moment(meeting.start_date).format('h:mm a') } - { moment(meeting.end_date).format('h:mm a') }
+                                    { moment(meeting.start_at).format('h:mm a') } - { moment(meeting.end_at).format('h:mm a') }
                                 </p>
                             </div>
                             <div className="flex-shrink-0">
