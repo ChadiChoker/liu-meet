@@ -26,7 +26,6 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
         data,
         setData,
         post: create,
-        processing,
         reset,
         errors,
     } = useForm({
@@ -58,12 +57,7 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
                 if (meetingNameInput.current) {
                     meetingNameInput.current.focus();
                 }
-                if (startDateInput.current) {
-                    startDateInput.current.focus();
-                }
-                if (endDateInput.current) {
-                    endDateInput.current.focus();
-                }
+
                 if (invitees) {
                     setInvitees(invitees);
                 }
@@ -74,7 +68,6 @@ export default function ScheduleMeetingForm({ users = [], className = '' }: { us
 
     const closeModal = () => {
         setConfirmMeetingCreation(false);
-
         reset();
     };
 
