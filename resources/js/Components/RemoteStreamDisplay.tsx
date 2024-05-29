@@ -35,8 +35,8 @@ const RemoteStreamDisplay: React.FC<RemoteStreamDisplayProps> = ({
     return (
         <div>
             <div
-                className={`relative flex items-center justify-center bg-gray-400 rounded ${!videoEnabled ? '' : 'hidden'
-                    }`}
+                className={`relative flex items-center justify-center bg-gray-400 rounded hover:backdrop-blur-sm: ${!videoEnabled ? '' : 'hidden'
+                }`}
                 style={{ width: '30rem', height: '18rem' }}
             >
                 <Avatar className='z-10' name={name} size='2xl' />
@@ -46,6 +46,13 @@ const RemoteStreamDisplay: React.FC<RemoteStreamDisplayProps> = ({
                 {!audioEnabled && <AiOutlineAudioMuted className="absolute top-4 right-4 text-white text-md font-bold" />}
                 {audioEnabled && <AiOutlineAudio className="absolute top-4 right-4 text-white text-md font-bold" />}
                 <span className='absolute bottom-1 right-2 text-white text-sm font-bold'>{name}</span>
+
+                <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 group-hover:opacity-100 z-10'>
+                    <button className='bg-gray-800 text-white px-2 py-1 rounded'
+                            onClick={() => setAudioEnabled(!audioEnabled)}>
+                        {audioEnabled ? 'Mute' : 'Unmute'}
+                    </button>
+                </div>
             </div>
 
             <video
@@ -60,6 +67,7 @@ const RemoteStreamDisplay: React.FC<RemoteStreamDisplayProps> = ({
                 }}
             ></video>
         </div>
+
     );
 };
 

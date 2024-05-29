@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\SendHandShake;
 use App\Models\Meeting;
 use App\Models\User;
+use App\Notifications\MeetingInvitation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,11 +31,15 @@ class DashboardController extends Controller
 
        $user = auth()->user();
 
-       $meetings = Meeting::leftJoin('invitations', 'meetings.id', '=', 'invitations.meeting_id')
-           ->where(function ($query) use ($user) {
-               $query->where('meetings.user_id', $user->id)
-                   ->orWhere('invitations.user_id', $user->id);
-              })
+        $meetings = Meeting::leftJoin('invitations', 'meetings.id', '=', 'invitations.meeting_id')
+            ->where(function ($query) use ($user) {
+                $query->where('meetings.user_id', $user->id)
+                    ->orWhere('invitations.user_id', $user->id);
+            })
+            ->where('start_at', '>=', $today)
+            ->where('start_at', '<', Carbon::tomorrow())
+            ->where('end_at', '>=', Carbon::now())
+            ->orderBy('start_at', 'asc')
             ->get();
 
        $allUsers = User::all()->except(auth()->id())->toArray();
@@ -92,14 +97,21 @@ class DashboardController extends Controller
         $meeting->name = $validatedData['name'];
         $meeting->start_at = $validatedData['start_date'];
         $meeting->end_at = $validatedData['end_date'];
-        $meeting->code = uniqid('meeting_'); // Generates a unique code like 'meeting_5f34d8f6b7f6a
-        $meeting->user_id = Auth::id(); // Assuming the currently authenticated user is the creator
+        $meeting->code = uniqid();
+        $meeting->user_id = Auth::id();
 
         // Save the meeting
         $meeting->save();
 
         // Attach invitees to the meeting
         $meeting->invitees()->attach($validatedData['invitees']);
+
+        // send email to invitees
+
+        foreach ($validatedData['invitees'] as $invitee) {
+            $invitee = User::find($invitee);
+            $invitee->notify(new MeetingInvitation($meeting));
+        }
 
         return redirect()->route('dashboard');
     }
